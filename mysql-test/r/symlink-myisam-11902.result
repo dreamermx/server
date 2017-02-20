@@ -1,4 +1,3 @@
-set default_storage_engine=Aria;
 call mtr.add_suppression("File.*t1.* not found");
 create table mysql.t1 (a int, b char(16), index(a));
 insert mysql.t1 values (100, 'test'),(101,'test');
@@ -14,7 +13,7 @@ set debug_sync='mi_open_datafile SIGNAL ok WAIT_FOR go';
 select * from t1;
 set debug_sync='now WAIT_FOR ok';
 set debug_sync='now SIGNAL go';
-ERROR HY000: File 'MYSQLTEST_VARDIR/tmp/foo/t1.MAD' not found (Errcode: 20)
+ERROR HY000: File 'MYSQLTEST_VARDIR/tmp/foo/t1.MYD' not found (Errcode: 20)
 flush tables;
 drop table if exists t1;
 create table t1 (a int, b char(16), index (a))

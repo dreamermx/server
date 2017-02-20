@@ -3,4 +3,4 @@
 #
 source include/have_maria.inc;
 set default_storage_engine=Aria;
-source symlink-11902.test;
+source symlink-myisam-11902.test;
