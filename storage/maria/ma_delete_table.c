@@ -88,11 +88,34 @@ int maria_delete_table_files(const char *name, myf sync_dir)
   DBUG_ENTER("maria_delete_table_files");
 
   fn_format(from,name,"",MARIA_NAME_IEXT,MY_UNPACK_FILENAME|MY_APPEND_EXT);
-  if (mysql_file_delete_with_symlink(key_file_kfile, from,
-                                     MYF(MY_WME | sync_dir)))
-    DBUG_RETURN(my_errno);
+  if (my_is_symlink(from) && mysys_test_invalid_symlink(from))
+  {
+    /*
+      Symlink is pointing to file in data directory.
+      Remove symlink, keep file.
+    */
+    if (mysql_file_delete(key_file_kfile, from, MYF(MY_WME)))
+      DBUG_RETURN(my_errno);
+  }
+  else
+  {
+    if (mysql_file_delete_with_symlink(key_file_kfile, from, MYF(MY_WME | sync_dir)))
+      DBUG_RETURN(my_errno);
+  }
   fn_format(from,name,"",MARIA_NAME_DEXT,MY_UNPACK_FILENAME|MY_APPEND_EXT);
-  DBUG_RETURN(mysql_file_delete_with_symlink(key_file_dfile,
-                                             from, MYF(MY_WME | sync_dir)) ?
-              my_errno : 0);
+  if (my_is_symlink(from) && mysys_test_invalid_symlink(from))
+  {
+    /*
+      Symlink is pointing to file in data directory.
+      Remove symlink, keep file.
+    */
+    if (mysql_file_delete(key_file_dfile, from, MYF(MY_WME)))
+      DBUG_RETURN(my_errno);
+  }
+  else
+  {
+    if (mysql_file_delete_with_symlink(key_file_dfile, from, MYF(MY_WME| sync_dir)))
+      DBUG_RETURN(my_errno);
+  }
+  DBUG_RETURN(0);
 }
