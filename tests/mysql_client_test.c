@@ -19043,7 +19043,7 @@ static void test_bug17512527()
   char query[MAX_TEST_QUERY_LENGTH];
   int rc;
 
-  conn= client_connect(0, MYSQL_PROTOCOL_DEFAULT, 1);
+  conn= client_connect(0, MYSQL_PROTOCOL_SOCKET, 1);
 
   stmt1 = mysql_stmt_init(conn);
   check_stmt(stmt1);
@@ -19340,7 +19340,9 @@ static struct my_tests_st my_tests[]= {
   { "test_bug13001491", test_bug13001491 },
   { "test_mdev4326", test_mdev4326 },
   { "test_ps_sp_out_params", test_ps_sp_out_params },
+#ifndef _WIN32
   { "test_bug17512527", test_bug17512527},
+#endif
   { 0, 0 }
 };
 
